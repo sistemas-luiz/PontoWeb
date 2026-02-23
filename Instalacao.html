@@ -132,28 +132,18 @@
     </div>
 
     <script>
-        // 1. Configuração de Links com base no Dispositivo e Captura de Parâmetros
+        // 1. Configuração de Links com base no Dispositivo
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const openAppBtn = document.getElementById('openAppBtn');
         const deviceText = document.getElementById('deviceText');
         const installBtnText = document.getElementById('installBtnText');
         const browserInfo = document.getElementById('browserInfo');
 
-        // Capturar parâmetros repassados pelo redirecionamento do Google Apps Script
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id');
-        const token = urlParams.get('token');
-        let queryString = "";
-        
-        if (id && token) {
-            queryString = `?id=${id}&token=${token}`;
-        }
-
         if (isMobile) {
-            openAppBtn.href = "https://luizhenrinq1-svg.github.io/testepontoweb/Index_github.html" + queryString;
+            openAppBtn.href = "https://luizhenrinq1-svg.github.io/testepontoweb/index.html";
             deviceText.textContent = "Instale o app no seu celular para acesso rápido.";
         } else {
-            openAppBtn.href = "https://luizhenrinq1-svg.github.io/testepontoweb/Index_pc.html" + queryString;
+            openAppBtn.href = "https://luizhenrinq1-svg.github.io/testepontoweb/index_pc.html";
             deviceText.textContent = "Instale a versão Desktop no seu computador.";
             installBtnText.textContent = "Instalar no PC";
         }

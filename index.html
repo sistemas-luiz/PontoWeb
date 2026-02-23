@@ -5,6 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PontoWeb Unespar</title>
+
+    <!-- DETECÇÃO DE DISPOSITIVO (Redirecionamento Inteligente) -->
+    <script>
+      (function() {
+        // Verifica se o userAgent corresponde a um dispositivo móvel
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // Se NÃO for mobile (ou seja, é PC/Desktop), redireciona para a versão de PC
+        if (!isMobile) {
+          console.log("Acesso via PC detectado. Redirecionando...");
+          // O replace é usado para não gerar histórico de navegação "sujo" no botão de voltar
+          window.location.replace("Index_pc.html" + window.location.search);
+        }
+      })();
+    </script>
     
     <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json">
@@ -396,7 +411,7 @@
                <span className="text-[10px] text-gray-400 leading-tight max-w-[280px] inline-block">
                  Este aplicativo atende e respeita as normas da Política de Privacidade e Proteção de Dados (LGPD).
                </span>
-               <div className="text-[9px] text-gray-300 mt-2 font-mono">Versão 5.0</div>
+               <div className="text-[9px] text-gray-300 mt-2 font-mono">Versão 5.0 (Offline Ready)</div>
             </div>
           </div>
         );
@@ -474,4 +489,3 @@
     </script>
   </body>
 </html>
-

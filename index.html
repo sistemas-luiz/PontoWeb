@@ -475,23 +475,37 @@
               presets: ['react'] 
             }).code;
             
-            // Injeta o script compilado na página
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.textContent = compiledCode;
-            document.body.appendChild(script);
+            // Executa o código em um escopo isolado na memória,
+            // contornando totalmente o interceptor de DOM (transformScriptTags.ts) do Canvas.
+            const executeApp = new Function(compiledCode);
+            executeApp();
           }
         } catch (err) {
-          console.error("Erro na compilação do React:", err);
-          const rootEl = document.getElementById('root');
-          if (rootEl) {
-            rootEl.innerHTML = `
-              <div style="padding: 24px; text-align: center; font-family: sans-serif; color: #dc2626; max-width: 400px; margin: 40px auto; border: 1px solid #fca5a5; border-radius: 12px; background: #fef2f2;">
-                <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px;">Falha ao Carregar</h3>
-                <p style="font-size: 14px; color: #4b5563; margin-bottom: 16px;">Ocorreu um problema ao compilar o React.</p>
-                <pre style="text-align: left; background: #ffffff; padding: 12px; border-radius: 8px; font-size: 12px; border: 1px solid #e5e7eb; overflow-x: auto; font-family: monospace;">${err.message}</pre>
-              </div>
-            `;
+          console.error("Erro na compilação ou execução do React:", err);
+          
+          // Fallback final caso o ambiente force a injeção
+          try {
+             const reactAppEl = document.getElementById('react-app');
+             if (reactAppEl) {
+                const rawCode = reactAppEl.textContent;
+                const compiledCode = Babel.transform(rawCode, { presets: ['react'] }).code;
+                const blob = new Blob([compiledCode], { type: 'application/javascript' });
+                const script = document.createElement('script');
+                script.type = 'module'; 
+                script.src = URL.createObjectURL(blob);
+                document.body.appendChild(script);
+             }
+          } catch(fallbackErr) {
+             const rootEl = document.getElementById('root');
+             if (rootEl) {
+               rootEl.innerHTML = `
+                 <div style="padding: 24px; text-align: center; font-family: sans-serif; color: #dc2626; max-width: 400px; margin: 40px auto; border: 1px solid #fca5a5; border-radius: 12px; background: #fef2f2;">
+                   <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px;">Falha ao Carregar</h3>
+                   <p style="font-size: 14px; color: #4b5563; margin-bottom: 16px;">Ocorreu um problema ao inicializar o App.</p>
+                   <pre style="text-align: left; background: #ffffff; padding: 12px; border-radius: 8px; font-size: 12px; border: 1px solid #e5e7eb; overflow-x: auto; font-family: monospace;">${err.message}</pre>
+                 </div>
+               `;
+             }
           }
         }
       });

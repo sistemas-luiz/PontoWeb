@@ -470,9 +470,12 @@
           if (reactAppEl) {
             const rawCode = reactAppEl.textContent;
             
-            // Compila dinamicamente o código JSX em JavaScript puro
+            // ATUALIZADO: Configurado o preset 'react' para usar o runtime 'classic'
+            // Isso evita injeções de 'import' do React 17+ automático e gera JavaScript ES5 limpo
             const compiledCode = Babel.transform(rawCode, { 
-              presets: ['react'] 
+              presets: [
+                ['react', { runtime: 'classic' }]
+              ] 
             }).code;
             
             // Executa o código em um escopo isolado na memória,
@@ -488,7 +491,9 @@
              const reactAppEl = document.getElementById('react-app');
              if (reactAppEl) {
                 const rawCode = reactAppEl.textContent;
-                const compiledCode = Babel.transform(rawCode, { presets: ['react'] }).code;
+                const compiledCode = Babel.transform(rawCode, { 
+                  presets: [['react', { runtime: 'classic' }]] 
+                }).code;
                 const blob = new Blob([compiledCode], { type: 'application/javascript' });
                 const script = document.createElement('script');
                 script.type = 'module'; 

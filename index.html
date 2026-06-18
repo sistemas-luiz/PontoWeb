@@ -9,14 +9,19 @@
     <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#166534">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- ATUALIZADO: Usando o padrão mobile-web-app-capable correto e atual -->
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- ATUALIZADO: Icone do App -->
+    
+    <!-- Ícone do App -->
     <link rel="apple-touch-icon" href="https://github.com/luizhenrinq1-svg/testepontoweb/blob/main/Icone.png?raw=true">
+    
+    <!-- Fallback para evitar erro de favicon 404 -->
+    <link rel="icon" type="image/png" href="https://github.com/luizhenrinq1-svg/testepontoweb/blob/main/Icone.png?raw=true">
 
     <!-- Dependências -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -25,7 +30,13 @@
 
     <style>
       /* FUNDO BRANCO E TIPOGRAFIA */
-      body { background-color: #ffffff; color: #1f2937; font-family: 'Segoe UI', sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+      body { 
+        background-color: #ffffff; 
+        color: #1f2937; 
+        font-family: 'Segoe UI', sans-serif; 
+        user-select: none; 
+        -webkit-tap-highlight-color: transparent; 
+      }
       
       /* ANIMAÇÕES DE FLUIDEZ */
       .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -124,24 +135,21 @@
         ShieldCheck: (props) => <svg className={`w-6 h-6 ${props.className || ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
         LogIn: (props) => <svg className={`w-4 h-4 ${props.className || ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>,
         Share: (props) => <svg className={`w-6 h-6 ${props.className || ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>,
-        Settings: (props) => <svg className={`w-6 h-6 ${props.className || ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Settings: (props) => <svg className={`w-6 h-6 ${props.className || ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
       };
 
       // --- APP COMPONENT ---
       function TimeClock({ onBack }) {
-        // Inicialização "Lazy" para ler cache instantaneamente antes de renderizar (GARANTIA DE MEMÓRIA)
         const [authData] = useState(() => JSON.parse(localStorage.getItem(CACHE_KEY_AUTH) || 'null'));
         const [cachedData] = useState(() => JSON.parse(localStorage.getItem(CACHE_KEY_DATA) || 'null'));
 
         const [params, setParams] = useState(authData);
-        // Garante que o nome venha do cache imediatamente
         const [bolsistaName, setBolsistaName] = useState(cachedData?.nome || '');
         const [lastAction, setLastAction] = useState(cachedData?.lastAction || null);
         const [entryTime, setEntryTime] = useState(cachedData?.entryTime || null);
         const [exitTime, setExitTime] = useState(cachedData?.exitTime || null);
         const [location, setLocation] = useState(null);
         
-        // Se tiver cache, status começa 'ready', senão 'loading'
         const [status, setStatus] = useState(cachedData ? 'ready' : 'loading');
         
         const [punchType, setPunchType] = useState(null);
@@ -157,11 +165,9 @@
 
         useEffect(() => { const t=setInterval(()=>setCurrentTime(new Date()),1000); return ()=>clearInterval(t); }, []);
         
-        // Recarrega config ao ganhar foco
         const loadConfig = () => { const s=localStorage.getItem(CACHE_KEY_NOTIF); if(s) setLocalNotifConfig(JSON.parse(s)); };
         useEffect(() => { loadConfig(); window.addEventListener('focus', loadConfig); return ()=>window.removeEventListener('focus',loadConfig); }, []);
 
-        // Monitor Local (Vibração)
         useEffect(() => {
           const check = () => {
              if(!localNotifConfig.entrada && !localNotifConfig.saida) return;
@@ -177,7 +183,6 @@
 
         const triggerAppAlert = (title) => {
            try { if('vibrate' in navigator) navigator.vibrate([200,100,200]); } catch(e){}
-           // ATUALIZADO: Icone na notificação
            if (Notification.permission==='granted') new Notification(title,{icon:'https://github.com/luizhenrinq1-svg/testepontoweb/blob/main/Icone.png?raw=true'});
         };
 
@@ -199,16 +204,13 @@
            } else { alert("Aguarde a identificação do usuário."); }
         };
 
-        // Lógica de Login/Carregamento
         useEffect(() => {
           const u=new URLSearchParams(window.location.search);
           const uid=u.get('id'), ut=u.get('token');
           
           if(uid && ut) { 
-             // Login via URL (sobrescreve cache)
              saveAndLogin(uid, ut); 
           } else if (params) {
-             // Já tem dados do cache, atualiza em background, mas mantém a interface "ready"
              loadBolsistaBackground(params.id, params.token);
              initGPS();
           } else {
@@ -220,7 +222,7 @@
            const auth = {id,token};
            localStorage.setItem(CACHE_KEY_AUTH, JSON.stringify(auth));
            setParams(auth);
-           setStatus('loading'); // Mostra spinner pq é login novo
+           setStatus('loading');
            loadBolsistaBackground(id,token);
            initGPS();
         };
@@ -243,7 +245,6 @@
                if(res.error) { 
                  if(!cachedData) { alert(res.error); localStorage.removeItem(CACHE_KEY_AUTH); setStatus('waiting_link'); }
                } else {
-                 // SALVAR NA MEMÓRIA DO CELULAR (Cache)
                  localStorage.setItem(CACHE_KEY_DATA,JSON.stringify(res));
                  applyUserData(res);
                  setStatus('ready');
@@ -254,7 +255,7 @@
            } else if(!cachedData) {
              setStatus('error-offline');
            } else {
-             // Tem cache mas tá offline, mantém mostrando dados (ready)
+             // Mantém mostrando dados mesmo em cache offline
            }
         };
 
@@ -277,12 +278,11 @@
           google.script.run.withSuccessHandler(res => { 
              if(res.ok) { 
                setResult(res); setStatus('success'); 
-               // ATUALIZA MEMÓRIA IMEDIATAMENTE APÓS SUCESSO
                const c=JSON.parse(localStorage.getItem(CACHE_KEY_DATA)||'{}'); 
                c.lastAction=punchType;
                if(punchType==='Entrada') c.entryTime=res.timestamp.split(' ')[1].substring(0,5);
                if(punchType==='Saida') c.exitTime=res.timestamp.split(' ')[1].substring(0,5);
-               c.nome = bolsistaName; // Garante persistência do nome
+               c.nome = bolsistaName;
                localStorage.setItem(CACHE_KEY_DATA,JSON.stringify(c)); 
                applyUserData(c);
              } else { alert("Erro: "+res.msg); setStatus('ready'); } 
@@ -292,7 +292,6 @@
         if(status==='waiting_link') return <div className="h-screen flex items-center justify-center p-4 bg-white"><form onSubmit={handleManualLogin} className="w-full max-w-sm text-center fade-in"><div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600"><Icon.Link/></div><h1 className="text-xl font-bold mb-2 text-gray-800">Identificação</h1><p className="text-gray-500 mb-6 text-sm">Cole seu link pessoal para acessar.</p><input value={inputUrl} onChange={e=>setInputUrl(e.target.value)} placeholder="Cole aqui..." className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-green-500 outline-none"/><button className="bg-green-600 text-white w-full py-3 rounded-lg font-bold shadow-lg scale-click">Entrar</button></form></div>;
         if(status==='loading') return (
           <div className="h-screen flex flex-col items-center justify-center bg-white gap-4">
-            {/* SPLASH SCREEN COM O LOGO SOLICITADO */}
             <img src="https://github.com/luizhenrinq1-svg/testepontoweb/blob/main/Logo.png?raw=true" className="w-48 h-48 animate-pulse" />
             <div className="spinner"></div>
           </div>
@@ -308,15 +307,12 @@
               <button onClick={()=>{if(videoRef.current?.srcObject) videoRef.current.srcObject.getTracks().forEach(t=>t.stop()); setStatus('ready');}} className="flex-1 bg-white py-4 rounded-xl font-bold text-gray-800 shadow-lg scale-click">Cancelar</button>
               <button onClick={confirm} className="flex-1 bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg flex justify-center items-center gap-2 scale-click"><Icon.Camera className="w-5 h-5"/> Confirmar</button>
             </div>
-            <div className="absolute top-10 bg-black/40 backdrop-blur-md text-white font-bold text-sm px-4 py-2 rounded-full">A registar {punchType}</div>
+            <div className="absolute top-10 bg-black/40 backdrop-blur-md text-white font-bold text-sm px-4 py-2 rounded-full">A registrar {punchType}</div>
           </div>
         );
 
-        // --- LÓGICA DE BLOQUEIO DE INTERVALO ---
         const isWorking = lastAction==='Entrada'||lastAction==='Intervalo-Fim';
         const onInterval = lastAction==='Intervalo-Inicio';
-        
-        // Bloqueio de botões se não houver localização
         const isLocationMissing = !location;
 
         const isEntryBlocked = isWorking || onInterval;
@@ -338,7 +334,6 @@
                 </button>
               )}
 
-              {/* TÍTULO ESTÁTICO (Salvo no App Shell) */}
               <h1 className="text-2xl font-bold tracking-tight">PontoWeb</h1>
               <div className="mt-1 opacity-90 text-xs font-medium uppercase tracking-widest">Unespar</div>
               
@@ -357,7 +352,6 @@
             
             <div className="flex-1 p-6 flex flex-col justify-center gap-4 fade-in">
               <div className="text-center mb-4">
-                {/* INFORMAÇÃO SALVA NA MEMÓRIA DO CELULAR (Cache) */}
                 <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">Bolsista Identificado</p>
                 <h3 className="text-lg font-bold text-gray-800">{bolsistaName || <span className="animate-pulse">...</span>}</h3>
                 
@@ -367,7 +361,6 @@
                 </div>
               </div>
 
-              {/* BOTÕES ESTÁTICOS (Salvos no App Shell) */}
               <div className="grid grid-cols-2 gap-4">
                  <button disabled={isEntryBlocked || isLocationMissing} onClick={()=>startCamera('Entrada')} className="col-span-1 bg-green-50 border-2 border-green-100 p-4 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-green-100 transition-colors disabled:opacity-40 disabled:grayscale scale-click">
                     <div className="w-10 h-10 bg-green-200 rounded-full flex items-center justify-center text-green-700"><Icon.LogIn className="w-5 h-5"/></div>
@@ -385,7 +378,6 @@
               </div>
             </div>
 
-            {/* RODAPÉ ESTÁTICO (Salvo no App Shell) */}
             <div className="pb-6 text-center">
                <div className="text-[10px] text-gray-400 flex flex-col items-center justify-center gap-1 opacity-80 mb-2">
                  <div className="flex items-center gap-1">
@@ -423,7 +415,6 @@
           <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center fade-in relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-64 bg-green-600 rounded-b-[3rem] -z-10"></div>
             
-            {/* ATUALIZADO: Logo novo */}
             <div className="w-24 h-24 bg-white rounded-3xl flex items-center justify-center shadow-xl mb-6 bounce z-10"><img src="https://github.com/luizhenrinq1-svg/testepontoweb/blob/main/Logo.png?raw=true" className="w-14 h-14"/></div>
             
             <h1 className="text-3xl font-bold text-gray-800 mb-2">PontoWeb</h1>
@@ -454,13 +445,11 @@
       }
 
       function Main() {
-        // CORREÇÃO: Verifica o modo ANTES da primeira renderização para evitar piscar a tela de instalação
         const [mode, setMode] = useState(() => {
           const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
           const hasParams = new URLSearchParams(window.location.search).has('id');
-          const hasCache = !!localStorage.getItem(CACHE_KEY_AUTH); // Verifica se já fez login antes
+          const hasCache = !!localStorage.getItem(CACHE_KEY_AUTH);
           
-          // Se for PWA, ou tiver Link, ou tiver Cache -> Vai direto pro App
           if (isStandalone || hasParams || hasCache) return 'app';
           
           return 'landing';

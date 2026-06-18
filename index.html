@@ -22,6 +22,7 @@
     <!-- Dependências -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Firebase -->
@@ -112,8 +113,8 @@
       }
     </script>
 
-    <!-- REACT APP LOGIC -->
-    <script type="module">
+    <!-- REACT APP LOGIC (Isolado de interpretadores estáticos externos) -->
+    <script type="text/plain" id="react-app">
       const { useState, useEffect, useRef, useMemo } = React;
       
       const CACHE_KEY_AUTH = 'ponto_auth_data_v2';
@@ -459,6 +460,41 @@
 
       const root = ReactDOM.createRoot(document.getElementById('root'));
       root.render(<Main />);
+    </script>
+
+    <!-- Dinamic Transpiler Bootstrapper (Compatibilidade com Canvas e Navegadores modernos) -->
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        try {
+          const reactAppEl = document.getElementById('react-app');
+          if (reactAppEl) {
+            const rawCode = reactAppEl.textContent;
+            
+            // Compila dinamicamente o código JSX em JavaScript puro
+            const compiledCode = Babel.transform(rawCode, { 
+              presets: ['react'] 
+            }).code;
+            
+            // Injeta o script compilado na página
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.textContent = compiledCode;
+            document.body.appendChild(script);
+          }
+        } catch (err) {
+          console.error("Erro na compilação do React:", err);
+          const rootEl = document.getElementById('root');
+          if (rootEl) {
+            rootEl.innerHTML = `
+              <div style="padding: 24px; text-align: center; font-family: sans-serif; color: #dc2626; max-width: 400px; margin: 40px auto; border: 1px solid #fca5a5; border-radius: 12px; background: #fef2f2;">
+                <h3 style="font-weight: bold; font-size: 18px; margin-bottom: 8px;">Falha ao Carregar</h3>
+                <p style="font-size: 14px; color: #4b5563; margin-bottom: 16px;">Ocorreu um problema ao compilar o React.</p>
+                <pre style="text-align: left; background: #ffffff; padding: 12px; border-radius: 8px; font-size: 12px; border: 1px solid #e5e7eb; overflow-x: auto; font-family: monospace;">${err.message}</pre>
+              </div>
+            `;
+          }
+        }
+      });
     </script>
   </body>
 </html>

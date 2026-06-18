@@ -22,7 +22,6 @@
     <!-- Dependências -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Firebase -->
@@ -114,7 +113,7 @@
     </script>
 
     <!-- REACT APP LOGIC -->
-    <script type="text/babel">
+    <script type="module">
       const { useState, useEffect, useRef, useMemo } = React;
       
       const CACHE_KEY_AUTH = 'ponto_auth_data_v2';

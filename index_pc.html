@@ -9,7 +9,7 @@
     <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#166534">
-    <link rel="apple-touch-icon" href="https://github.com/sistemas-luiz-svg/PontoWeb/blob/main/Icone.png?raw=true">
+    <link rel="apple-touch-icon" href="https://github.com/sistemas-luiz/PontoWeb/blob/main/Icone.png?raw=true">
 
     <!-- Dependências -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -95,7 +95,10 @@
         window.google = { script: { run: createShim(null, null), url: { getLocation: (cb) => { cb({ parameter: {} }); } } } };
       }
       
-      if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(console.error);
+      // Registra o Service Worker apenas se estiver em um ambiente web válido (HTTP ou HTTPS)
+      if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.warn("ServiceWorker skip/error:", err));
+      }
     </script>
 
     <!-- REACT APP LOGIC -->
@@ -261,21 +264,17 @@
 
         useEffect(() => { const t=setInterval(()=>setCurrentTime(new Date()),1000); return ()=>clearInterval(t); }, []);
 
-        // --- CORREÇÃO 1: MONITORAMENTO ROBUSTO DE GPS (WatchPosition) ---
-        // Isso garante que assim que o usuário logar, o GPS comece a ser rastreado continuamente,
-        // corrigindo o problema de ter que reiniciar o app.
+        // --- MONITORAMENTO ROBUSTO DE GPS (WatchPosition) ---
         useEffect(() => {
           let watchId;
           if (sessionUser && appStatus === 'ready') {
              if (navigator.geolocation) {
-                // Tenta pegar a posição continuamente
                 watchId = navigator.geolocation.watchPosition(
                    (position) => {
                       setLocation(position.coords);
                    },
                    (error) => {
                       console.warn("Erro GPS:", error);
-                      // Não zeramos location aqui para evitar flicker se perder sinal momentaneamente
                    },
                    { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
                 );
@@ -284,7 +283,7 @@
           return () => {
              if (watchId) navigator.geolocation.clearWatch(watchId);
           };
-        }, [sessionUser, appStatus]); // Recria o watcher se o usuário logar
+        }, [sessionUser, appStatus]);
 
         useEffect(() => {
           const encryptedBlob = localStorage.getItem(STORAGE_SECURE);
@@ -309,7 +308,7 @@
                  setTempCredentials({ id, token, nome: res.nome || 'Bolsista' });
                  setBolsistaName(res.nome);
                  
-                 if (res.config) setNotifConfig(res.config); // Carrega config de notificação do backend
+                 if (res.config) setNotifConfig(res.config);
 
                  localStorage.setItem(STORAGE_PUBLIC, JSON.stringify({ nome: res.nome }));
                  setPublicInfo({ nome: res.nome });
@@ -327,13 +326,11 @@
               localStorage.setItem(STORAGE_SECURE, encrypted);
               setSessionUser(tempCredentials);
               
-              // --- CORREÇÃO: Carrega dados do App imediatamente para garantir consistência ---
               loadAppData(tempCredentials.id, tempCredentials.token);
               
               setTempCredentials(null);
               setGeneratedPass(''); 
               setView('app');
-              // initGPS removido pois o useEffect com watchPosition cuidará disso
            } catch(e) { showAlert("Erro", "Criptografia falhou.", "error"); }
         };
 
@@ -349,7 +346,6 @@
                  setBolsistaName(data.nome);
                  setView('app');
                  loadAppData(data.id, data.token);
-                 // initGPS removido, useEffect cuida disso
                  setInputPass(''); 
               } else throw new Error();
            } catch (err) { showAlert("Erro", "Senha incorreta.", "error"); setInputPass(''); }
@@ -393,18 +389,13 @@
 
         const saveNotificationSettings = async (newConfig, token) => {
            setNotifConfig(newConfig);
-           
-           // Salva token se foi gerado
            if (token) {
               await ExternalBridge.request('salvarToken', { id: sessionUser.id, token: sessionUser.token, fcmToken: token });
            }
-           
-           // Salva configurações
            await ExternalBridge.request('salvarConfiguracao', { 
               id: sessionUser.id, token: sessionUser.token, 
               entrada: newConfig.entrada, saida: newConfig.saida, antecedencia: newConfig.antecedencia 
            });
-           
            showAlert("Sucesso", "Configurações de alerta salvas e sincronizadas!", "info");
         };
 
@@ -429,7 +420,6 @@
                const c=JSON.parse(localStorage.getItem(CACHE_KEY_DATA)||'{}'); 
                c.lastAction=punchType;
                
-               // ATUALIZAÇÃO: Suporte a múltiplos turnos (concatena horários na visualização local)
                const newTime = res.timestamp.split(' ')[1].substring(0,5);
                if(punchType==='Entrada') {
                    if (c.entryTime && !c.entryTime.includes(newTime)) c.entryTime += ' / ' + newTime;
@@ -448,7 +438,6 @@
 
         if (view === 'loading_init') return <div className="h-screen w-full flex items-center justify-center"><div className="spinner"></div></div>;
 
-        // VIEWS SIMPLIFICADAS PARA ESPAÇO
         if (view === 'login_link') return ( <> <Modal config={modalConfig} onClose={closeModal} /> <div className="h-screen w-full flex items-center justify-center p-4 bg-gray-50"> <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg text-center fade-in border border-gray-100 relative"> <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><LucideIcon name="map" size={32}/></div> <h1 className="text-2xl font-bold mb-2 text-gray-800">Primeiro Acesso</h1> <p className="text-gray-500 mb-8 text-sm">Cole seu link de acesso pessoal para configurar.</p> <form onSubmit={handleManualLinkSubmit} className="flex gap-2"> <input value={inputUrl} onChange={e=>setInputUrl(e.target.value)} placeholder="Cole o link aqui..." className="flex-1 p-3 border border-gray-300 rounded-lg outline-none focus:border-green-500 transition-colors"/> <button className="bg-green-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors shadow-lg">Configurar</button> </form> </div> </div> </> );
         
         if (view === 'new_password') return ( <> <Modal config={modalConfig} onClose={closeModal} /> <div className="h-screen w-full flex items-center justify-center p-4 bg-green-600/10 backdrop-blur-sm"> <div className="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md text-center fade-in border-2 border-green-500 relative"> <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600"><LucideIcon name="lock" size={32}/></div> <h2 className="text-2xl font-bold text-gray-800">Senha Segura Criada!</h2> <p className="text-gray-500 text-sm mb-6 mt-2">Anote esta senha. Ela é a única chave para acessar seus dados neste PC.</p> <div className="bg-gray-100 p-4 rounded-xl border border-gray-200 mb-6 flex items-center justify-between group cursor-pointer" onClick={() => navigator.clipboard.writeText(generatedPass)}> <span className="font-mono text-xl font-bold text-gray-800 tracking-wider w-full text-center">{generatedPass}</span> <span className="text-gray-400 group-hover:text-green-600"><LucideIcon name="copy"/></span> </div> <button onClick={confirmPasswordCopy} className="w-full bg-green-600 text-white py-4 rounded-xl font-bold hover:bg-green-700 transition-all shadow-lg"> Copiei a senha, pode criptografar </button> </div> </div> </> );
@@ -457,7 +446,6 @@
 
         if(appStatus==='success') return ( <> <Modal config={modalConfig} onClose={closeModal} /> <div className="h-screen w-full flex items-center justify-center bg-green-50/50"> <div className="bg-white p-12 rounded-3xl shadow-xl text-center fade-in max-w-md w-full border border-gray-100"> <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600"><LucideIcon name="check" size={48}/></div> <h2 className="text-3xl font-bold text-gray-800 mb-2">Ponto Registrado!</h2> <p className="text-gray-500 text-xl font-mono mb-8">{result?.timestamp}</p> <button onClick={() => {setResult(null); setAppStatus('ready');}} className="w-full bg-gray-800 text-white py-4 rounded-xl font-bold hover:bg-black transition-colors shadow-lg">Voltar ao Início</button> </div> </div> </> );
 
-        // --- CORREÇÃO 2: TELA DE CARREGAMENTO NO ENVIO DA FOTO ---
         if(appStatus==='sending') return (
            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[90] flex flex-col items-center justify-center fade-in">
               <div className="spinner w-20 h-20 border-4 border-t-green-500 border-r-green-500 border-b-green-700 border-l-transparent mb-6"></div>
@@ -470,16 +458,9 @@
         const isWorking = lastAction === 'Entrada' || lastAction === 'Intervalo-Fim';
         const onInterval = lastAction === 'Intervalo-Inicio';
 
-        // 1. Entrada: Bloqueada se trabalhando OU intervalo
         const isEntryDisabled = isWorking || onInterval || !location;
-        
-        // 2. Saída: Bloqueada se NÃO trabalhando OU intervalo
         const isExitDisabled = !isWorking || onInterval || !location;
-        
-        // 3. Início Intervalo: Bloqueado se NÃO trabalhando OU já em intervalo
         const isIntStartDisabled = !isWorking || onInterval || !location;
-        
-        // 4. Fim Intervalo: Bloqueado se NÃO estiver em intervalo (AQUI ESTÁ O PULO DO GATO)
         const isIntEndDisabled = !onInterval || !location;
 
         const getTimes = (str) => str ? str.split(' / ') : [];
@@ -498,7 +479,8 @@
                 {/* SIDEBAR */}
                 <div className="w-80 bg-slate-50 p-10 flex flex-col border-r border-gray-100 relative z-10 shrink-0">
                    <div className="mb-10 flex items-center gap-4">
-                      <img src="https://github.com/sistemas-luiz-svg/PontoWeb/blob/main/Icone.png?raw=true" className="w-20 h-20 object-contain"/>
+                      {/* URL CORRIGIDA PARA REPOSITÓRIO ATIVO */}
+                      <img src="https://github.com/sistemas-luiz/PontoWeb/blob/main/Icone.png?raw=true" className="w-20 h-20 object-contain"/>
                       <div className="flex flex-col justify-center -mt-2">
                          <h1 className="text-3xl font-bold text-green-700 tracking-tight leading-none">PontoWeb</h1>
                          <p className="text-gray-400 text-xs font-medium tracking-wider uppercase mt-1">Versão PC 3.1</p>
@@ -556,9 +538,9 @@
                 {/* MAIN AREA */}
                 <div className="flex-1 p-12 relative flex flex-col bg-white overflow-hidden">
                    
-                   {/* BACKGROUND LOGO - MARCA D'ÁGUA */}
+                   {/* BACKGROUND LOGO - MARCA D'ÁGUA - URL CORRIGIDA PARA REPOSITÓRIO ATIVO */}
                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-                      <img src="https://github.com/sistemas-luiz-svg/PontoWeb/blob/main/Logo.png?raw=true" className="w-[70vh] h-[70vh] object-contain opacity-[0.05]" />
+                      <img src="https://github.com/sistemas-luiz/PontoWeb/blob/main/Logo.png?raw=true" className="w-[70vh] h-[70vh] object-contain opacity-[0.05]" />
                    </div>
 
                    <div className="mb-4 relative z-10">
@@ -568,7 +550,8 @@
                              {currentTime.toLocaleTimeString('pt-BR').substring(0,5)}
                              <span className="text-3xl text-gray-300 ml-1 font-normal">{currentTime.getSeconds().toString().padStart(2,'0')}</span>
                         </p>
-                        <img src="https://github.com/sistemas-luiz-svg/PontoWeb/blob/main/Logo.png?raw=true" className="w-24 h-24 object-contain drop-shadow-sm -mt-6 ml-12" />
+                        {/* URL CORRIGIDA PARA REPOSITÓRIO ATIVO */}
+                        <img src="https://github.com/sistemas-luiz/PontoWeb/blob/main/Logo.png?raw=true" className="w-24 h-24 object-contain drop-shadow-sm -mt-6 ml-12" />
                       </div>
                    </div>
 
